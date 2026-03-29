@@ -60,13 +60,13 @@
 
 <div id="game-container">
     <div id="start-screen">
-        <h1>清明迷宮大冒險 🚗💨</h1>
-        <p style="color:#666; font-size: 16px;">用鍵盤方向鍵控制(按一下方向鍵即可控制方向，請不要一直按著喔!)，<br>吃光所有金豆供品並躲避幽靈！</p>
+        <h1>清明迷宮大冒險 😊💨</h1>
+        <p style="color:#666; font-size: 16px;">用鍵盤方向鍵控制(按一下方向鍵即可，不要一直按著喔!)，<br>吃光所有金豆供品並躲避幽靈！</p>
         <button onclick="startGame()">開始挑戰</button>
     </div>
 
     <div id="game-stage" style="display:none;">
-        <div id="story-text">✨ 按一下鍵盤方向鍵：移動🚗(不要一直按著喔!)。吃光🟡過關！小心👻！</div>
+        <div id="story-text">✨ 鍵盤方向鍵((按一下方向鍵即可，不要一直按著喔!)：移動😊。吃光🟡過關！小心👻！</div>
         <canvas id="gameCanvas" width="560" height="400"></canvas>
         <div id="score-board">
             <span>🪙 進度: <span id="progress-dots">0</span> / <span id="total-dots">0</span></span>
@@ -111,12 +111,12 @@
         [1,0,0,0,0,0,0,1,1,0,0,0,0,1,1,0,0,0,0,1,1,0,0,0,0,0,0,1],
         [1,1,1,1,1,1,0,1,1,1,1,1,2,1,1,2,1,1,1,1,1,0,1,1,1,1,1,1],
         [1,1,1,1,1,1,0,1,1,2,2,2,2,2,2,2,2,2,2,1,1,0,1,1,1,1,1,1],
-        [1,2,2,2,2,2,0,2,2,2,1,1,1,2,2,1,1,1,2,2,2,0,2,2,2,2,2,1], // 傳送門層(簡化，不實作傳送)
+        [1,2,2,2,2,2,0,2,2,2,1,1,1,2,2,1,1,1,2,2,2,0,2,2,2,2,2,1], 
         [1,1,1,1,1,1,0,1,1,2,1,1,1,1,1,1,1,1,2,1,1,0,1,1,1,1,1,1],
         [1,1,1,1,1,1,0,1,1,2,2,2,2,2,2,2,2,2,2,1,1,0,1,1,1,1,1,1],
         [1,0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1],
         [1,0,1,1,1,1,0,1,1,1,1,1,0,1,1,0,1,1,1,1,1,0,1,1,1,1,0,1],
-        [1,0,0,0,1,1,0,0,0,0,0,0,0,2,2,0,0,0,0,0,0,0,1,1,0,0,0,1], // 🚗 初始位置在中間
+        [1,0,0,0,1,1,0,0,0,0,0,0,0,2,2,0,0,0,0,0,0,0,1,1,0,0,0,1], // 😊 初始位置在中間
         [1,1,1,0,1,1,0,1,1,0,1,1,1,1,1,1,1,1,0,1,1,0,1,1,0,1,1,1],
         [1,0,0,0,0,0,0,1,1,0,0,0,0,1,1,0,0,0,0,1,1,0,0,0,0,0,0,1],
         [1,0,1,1,1,1,1,1,1,1,1,1,0,1,1,0,1,1,1,1,1,1,1,1,1,1,0,1],
@@ -124,7 +124,6 @@
         [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
     ];
 
-    // 遊戲運行時的地圖數據（用於移除豆子）
     let currentMap = [];
     let player = { x: 0, y: 0, dir: 'stop', nextDir: 'stop', speed: 2 };
     let ghosts = [
@@ -134,23 +133,17 @@
     ];
     let totalDots = 0, eatenDots = 0, lives = 3, isGameOver = false, animationId;
 
-    // 方向鍵監聽
     window.addEventListener("keydown", e => {
         if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)){
-            e.preventDefault(); // 防止網頁捲動
-            player.nextDir = e.key; // 記錄玩家想去的方向，待有路時轉向
+            e.preventDefault(); 
+            player.nextDir = e.key; 
         }
     });
 
-    // 初始設定
     function initGame() {
-        currentMap = mazeMap.map(row => [...row]); // 複製地圖
-        totalDots = 0;
-        eatenDots = 0;
-        lives = 3;
-        isGameOver = false;
+        currentMap = mazeMap.map(row => [...row]); 
+        totalDots = 0; eatenDots = 0; lives = 3; isGameOver = false;
 
-        // 計算豆子總數，設定角色位置
         for(let r=0; r<ROWS; r++){
             for(let c=0; c<COLS; c++){
                 if(currentMap[r][c] === 0) totalDots++;
@@ -159,20 +152,15 @@
         document.getElementById("total-dots").innerText = totalDots;
         document.getElementById("progress-dots").innerText = 0;
         document.getElementById("lives-display").innerText = "❤️❤️❤️";
-
         resetPositions();
     }
 
-    // 重設角色與幽靈位置 (重生時使用)
     function resetPositions() {
-        player.x = 13.5 * TILE_SIZE; // 地圖中間空地
+        player.x = 13.5 * TILE_SIZE; 
         player.y = 14 * TILE_SIZE;
-        player.dir = 'stop';
-        player.nextDir = 'stop';
-
+        player.dir = 'stop'; player.nextDir = 'stop';
         ghosts.forEach((g, i) => {
-            g.x = (12 + i*2) * TILE_SIZE; // 幽靈房附近
-            g.y = 8 * TILE_SIZE;
+            g.x = (12 + i*2) * TILE_SIZE; g.y = 8 * TILE_SIZE;
             g.dir = Math.random() > 0.5 ? 'left' : 'right';
         });
     }
@@ -185,220 +173,126 @@
         gameLoop();
     }
 
-    // --- 繪製函數 ---
     function drawEmoji(emoji, x, y, size) {
-        ctx.font = `${size}px serif`;
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
+        ctx.font = `${size}px serif`; ctx.textAlign = "center"; ctx.textBaseline = "middle";
         ctx.fillText(emoji, x + TILE_SIZE/2, y + TILE_SIZE/2);
     }
 
     function drawMap() {
-        ctx.setLineDash([]); // 實線牆壁
         for(let r=0; r<ROWS; r++){
             for(let c=0; c<COLS; c++){
                 let tile = currentMap[r][c];
-                let x = c * TILE_SIZE;
-                let y = r * TILE_SIZE;
-
+                let x = c * TILE_SIZE; let y = r * TILE_SIZE;
                 if(tile === 1){
-                    // 畫迷宮牆壁 (圓潤紫色矩形)
-                    ctx.fillStyle = "--maze-wall"; // 預備用，實際上用 JS 顏色
                     ctx.fillStyle = "#b39ddb"; 
-                    const p = 2; // 縮進，讓牆壁看起來有間隔
-                    // 簡易畫法，可用 ellipse 做出更圓潤效果
-                    ctx.fillRect(x + p, y + p, TILE_SIZE - 2*p, TILE_SIZE - 2*p);
+                    const p = 2; ctx.fillRect(x + p, y + p, TILE_SIZE - 2*p, TILE_SIZE - 2*p);
                 } else if(tile === 0){
-                    // 畫金豆子 🟡
-                    ctx.fillStyle = "#ffeb3b";
-                    ctx.beginPath();
-                    ctx.arc(x + TILE_SIZE/2, y + TILE_SIZE/2, 4, 0, Math.PI*2);
-                    ctx.fill();
+                    ctx.fillStyle = "#ffeb3b"; ctx.beginPath(); ctx.arc(x + TILE_SIZE/2, y + TILE_SIZE/2, 4, 0, Math.PI*2); ctx.fill();
                 }
             }
         }
     }
 
-    // --- 移動與碰撞邏輯 ---
-
-    // 檢查指定坐標是否會撞牆
     function isWallCollision(x, y) {
-        // 計算角色四個角佔據的網格
-        const buffer = 2; // 碰撞緩衝
+        const buffer = 2; 
         const left = Math.floor((x + buffer) / TILE_SIZE);
         const right = Math.floor((x + TILE_SIZE - 1 - buffer) / TILE_SIZE);
         const top = Math.floor((y + buffer) / TILE_SIZE);
         const bottom = Math.floor((y + TILE_SIZE - 1 - buffer) / TILE_SIZE);
-
-        // 超出邊界視為撞牆
         if(left < 0 || right >= COLS || top < 0 || bottom >= ROWS) return true;
-
-        // 檢查地圖格子是否為牆壁(1)
         if(currentMap[top][left] === 1 || currentMap[top][right] === 1 ||
-           currentMap[bottom][left] === 1 || currentMap[bottom][right] === 1) {
-            return true;
-        }
+           currentMap[bottom][left] === 1 || currentMap[bottom][right] === 1) return true;
         return false;
     }
 
     function movePlayer() {
-        // 1. 嘗試轉向：如果玩家有排隊的下一個方向，且那個方向沒牆壁，就轉向
         if(player.nextDir !== 'stop'){
             let nextX = player.x, nextY = player.y;
             if(player.nextDir === 'ArrowUp') nextY -= player.speed;
             if(player.nextDir === 'ArrowDown') nextY += player.speed;
             if(player.nextDir === 'ArrowLeft') nextX -= player.speed;
             if(player.nextDir === 'ArrowRight') nextX += player.speed;
-
-            // 輔助對齊：Pac-Man 風格需要在格子中心才能轉向，這裡做簡化
-            // 檢查轉向後是否會撞牆
             if(!isWallCollision(nextX, nextY)){
-                player.dir = player.nextDir;
-                player.nextDir = 'stop'; // 成功轉向
-                // 轉向時輕微對齊格子，讓移動更順暢
+                player.dir = player.nextDir; player.nextDir = 'stop';
                 player.x = Math.round(player.x / TILE_SIZE) * TILE_SIZE;
                 player.y = Math.round(player.y / TILE_SIZE) * TILE_SIZE;
             }
         }
-
-        // 2. 根據當前方向移動
         let tryX = player.x, tryY = player.y;
         if(player.dir === 'ArrowUp') tryY -= player.speed;
         if(player.dir === 'ArrowDown') tryY += player.speed;
         if(player.dir === 'ArrowLeft') tryX -= player.speed;
         if(player.dir === 'ArrowRight') tryX += player.speed;
-
-        // 3. 如果沒撞牆，更新位置
-        if(!isWallCollision(tryX, tryY)){
-            player.x = tryX;
-            player.y = tryY;
-        } else {
-            player.dir = 'stop'; // 撞牆停止
-        }
+        if(!isWallCollision(tryX, tryY)){ player.x = tryX; player.y = tryY; } 
+        else { player.dir = 'stop'; }
     }
 
     function moveGhosts() {
         ghosts.forEach(g => {
             let tryX = g.x, tryY = g.y;
-            if(g.dir === 'up') tryY -= g.speed;
-            if(g.dir === 'down') tryY += g.speed;
-            if(g.dir === 'left') tryX -= g.speed;
-            if(g.dir === 'right') tryX += g.speed;
-
-            // 幽靈撞牆就換方向 (簡易 AI)
-            if(!isWallCollision(tryX, tryY)){
-                g.x = tryX; g.y = tryY;
-                // 偶爾在路口隨機換方向
-                if(Math.random() < 0.02 && Number.isInteger(g.x/TILE_SIZE) && Number.isInteger(g.y/TILE_SIZE)){
-                    changeGhostDir(g);
-                }
-            } else {
-                // 對齊格子並立刻換方向
-                g.x = Math.round(g.x / TILE_SIZE) * TILE_SIZE;
-                g.y = Math.round(g.y / TILE_SIZE) * TILE_SIZE;
-                changeGhostDir(g);
-            }
+            if(g.dir === 'up') tryY -= g.speed; if(g.dir === 'down') tryY += g.speed;
+            if(g.dir === 'left') tryX -= g.speed; if(g.dir === 'right') tryX += g.speed;
+            if(!isWallCollision(tryX, tryY)){ g.x = tryX; g.y = tryY; if(Math.random() < 0.02 && Number.isInteger(g.x/TILE_SIZE) && Number.isInteger(g.y/TILE_SIZE)) changeGhostDir(g); } 
+            else { g.x = Math.round(g.x / TILE_SIZE) * TILE_SIZE; g.y = Math.round(g.y / TILE_SIZE) * TILE_SIZE; changeGhostDir(g); }
         });
     }
 
     function changeGhostDir(g) {
-        const dirs = ['up', 'down', 'left', 'right'];
-        // 排除反方向，避免鬼畜
         const opp = { 'up':'down', 'down':'up', 'left':'right', 'right':'left' };
-        const validDirs = dirs.filter(d => d !== opp[g.dir]);
+        const validDirs = ['up', 'down', 'left', 'right'].filter(d => d !== opp[g.dir]);
         g.dir = validDirs[Math.floor(Math.random() * validDirs.length)];
     }
 
-    // 吃豆子檢測
     function checkEatDots() {
-        // 計算角色中心點對應的網格
         const cx = Math.floor((player.x + TILE_SIZE/2) / TILE_SIZE);
         const cy = Math.floor((player.y + TILE_SIZE/2) / TILE_SIZE);
-
         if(currentMap[cy][cx] === 0){
-            currentMap[cy][cx] = 2; // 變為空地
-            eatenDots++;
-            sound.eat();
+            currentMap[cy][cx] = 2; eatenDots++; sound.eat();
             document.getElementById("progress-dots").innerText = eatenDots;
             if(eatenDots >= totalDots) endGame(true);
         }
     }
 
-    // 撞鬼檢測
     function checkGhostCollision() {
         ghosts.forEach(g => {
-            // 簡單的圓形碰撞
             const dx = (player.x + TILE_SIZE/2) - (g.x + TILE_SIZE/2);
             const dy = (player.y + TILE_SIZE/2) - (g.y + TILE_SIZE/2);
-            const dist = Math.sqrt(dx*dx + dy*dy);
-
-            if(dist < TILE_SIZE * 0.8){
-                playerCaught();
-            }
+            if(Math.sqrt(dx*dx + dy*dy) < TILE_SIZE * 0.8) playerCaught();
         });
     }
 
     function playerCaught() {
-        sound.die();
-        lives--;
-        document.getElementById("lives-display").innerText = "❤️".repeat(lives);
-        
-        if(lives <= 0){
-            endGame(false);
-        } else {
-            // 暫停一下，重設位置
+        sound.die(); lives--; document.getElementById("lives-display").innerText = "❤️".repeat(lives);
+        if(lives <= 0){ endGame(false); } 
+        else {
             isGameOver = true; 
-            setTimeout(() => {
-                isGameOver = false;
-                resetPositions();
-                gameLoop(); // 重啟循環
-            }, 1000);
+            setTimeout(() => { isGameOver = false; resetPositions(); gameLoop(); }, 1000);
         }
     }
 
-    // --- 主循環 ---
     function gameLoop() {
         if(isGameOver) return;
-
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-
         drawMap();
-        
-        movePlayer();
-        checkEatDots();
-        
-        moveGhosts();
-        checkGhostCollision();
-
-        // 畫大山 🚗 (表情符號)
-        drawEmoji("🚗", player.x, player.y, TILE_SIZE);
-
+        movePlayer(); checkEatDots();
+        moveGhosts(); checkGhostCollision();
+        // 畫的山 😊 (笑臉)
+        drawEmoji("😊", player.x, player.y, TILE_SIZE);
         // 畫幽靈 👻
-        ghosts.forEach(g => {
-            // 用 CSS 顏色濾鏡給幽靈上色 (簡化，直接畫Emoji即可，若要上色需用 arc 畫鬼)
-            ctx.fillStyle = g.color; // 預備用，畫弧形鬼用
-            // 這裡簡單用 Emoji，不同顏色可用不同 Spooky Emoji 如 🧛 🧟
-            drawEmoji("👻", g.x, g.y, TILE_SIZE);
-        });
-
+        ghosts.forEach(g => drawEmoji("👻", g.x, g.y, TILE_SIZE));
         animationId = requestAnimationFrame(gameLoop);
     }
 
     function endGame(win) {
-        isGameOver = true;
-        cancelAnimationFrame(animationId);
-        canvas.onmousedown = null;
-
+        isGameOver = true; cancelAnimationFrame(animationId);
         document.getElementById("game-stage").style.display = "none";
         document.getElementById("end-screen").style.display = "block";
-
         if(win){
-            sound.win();
-            document.getElementById("end-title").innerHTML = "🏆 任務達成！🏆";
-            document.getElementById("end-msg").innerText = `你吃光了所有供品，\n吃得非常飽！(｡◕∀◕｡)b`;
+            sound.win(); document.getElementById("end-title").innerHTML = "🏆 任務達成！🏆";
+            document.getElementById("end-msg").innerText = `你吃光了所有供品，\n吃得很飽！(｡◕∀◕｡)b`;
         } else {
             document.getElementById("end-title").innerHTML = "👻 被搗蛋了！ 👻";
-            document.getElementById("end-msg").innerText = `哎呀，被掃墓鬼抓到了... \n沒關係，再挑戰一次吧！(๑•̀ㅂ•了)v`;
+            document.getElementById("end-msg").innerText = `哎呀，被掃墓鬼抓到了... \n沒關係，再挑戰一次吧！(๑•̀ㅂ•)v`;
         }
     }
 </script>
